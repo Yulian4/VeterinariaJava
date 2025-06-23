@@ -7,7 +7,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
 
 import controlador.Coordinador;
 import modelo.conexion.Conexion;
@@ -23,26 +26,34 @@ public class MascotaDAO extends ModeloDAO {
 	@Override
 	public boolean registrar(Object dto) throws SQLException {
 		connection = conexion.getConnection();
-		if (dto instanceof MascotaDTO) {
-			MascotaDTO mascota = (MascotaDTO) dto;
-			if (ConexionBD.mascotasMap.containsKey(mascota.getIdDueno()) == false) {
-				String consulta = "insert into mascota(id_dueno,nombre,raza,sexo) values(?,?,?,?)";
-				System.out.println("Insertando mascota: " + mascota.getNombre() + ", " + mascota.getRaza() + ", "
-						+ mascota.getSexo());
-				preparedStatement = connection.prepareStatement(consulta);
-				preparedStatement.setString(1, mascota.getIdDueno());
-				preparedStatement.setString(2, mascota.getNombre());
-				preparedStatement.setString(3, mascota.getRaza());
-				preparedStatement.setString(4, mascota.getSexo());
-				preparedStatement.execute();
+		try {
+			if (dto instanceof MascotaDTO) {
+				MascotaDTO mascota = (MascotaDTO) dto;
+				if (ConexionBD.mascotasMap.containsKey(mascota.getIdDueno()) == false) {
+					String consulta = "insert into mascota(id_dueno,nombre,raza,sexo) values(?,?,?,?)";
+					System.out.println("Insertando mascota: " + mascota.getNombre() + ", " + mascota.getRaza() + ", "
+							+ mascota.getSexo());
+					preparedStatement = connection.prepareStatement(consulta);
+					preparedStatement.setString(1, mascota.getIdDueno());
+					preparedStatement.setString(2, mascota.getNombre());
+					preparedStatement.setString(3, mascota.getRaza());
+					preparedStatement.setString(4, mascota.getSexo());
+					preparedStatement.execute();
 
-				return true;
+					return true;
 
+				}
+			} else {
+				throw new IllegalArgumentException("Se esperaba un PersonaDTO");
 			}
-		} else {
-			throw new IllegalArgumentException("Se esperaba un PersonaDTO");
+			return false;
+			
+		} catch (SQLIntegrityConstraintViolationException e) {
+			JOptionPane.showMessageDialog(null, "No existe ningun \n dueño con ese documento");
+			
+			return false;
 		}
-		return false;
+		
 
 	}
 

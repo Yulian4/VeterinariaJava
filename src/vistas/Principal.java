@@ -57,8 +57,6 @@ public class Principal extends JFrame implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource()==btnGestionarPersonas) {
-			 System.out.println(">>> Se presionó el botón Gestionar Personas");
-		        System.out.println(">>> Coordinador en uso: " + miCoordinador);
 			miCoordinador.mostrarVentanaPersonas();
 		}
 		if(e.getSource()==btnGestionarMascotas) {

@@ -67,8 +67,16 @@ public class Coordinador {
 	public boolean registrarMascota(MascotaDTO mascota) throws SQLException {
 		return miMascotaDAO.registrar(mascota);
 	}
+	public String eliminarPersona(String text) throws SQLException {
+		return miPersonaDAO.eliminarPersona(text);
+	}
+
 	public String eliminarMascota(String idDueno,String nombreMascota) {
 		return miMascotaDAO.eliminarMascota(idDueno, nombreMascota);
+	}
+	public String actualizarPersona(PersonaDTO personaNueva) throws SQLException {
+
+		return miPersonaDAO.actualizarPersona(personaNueva);
 	}
 	public String actualizarMascota(MascotaDTO mascotaNueva,String nombreoriginal) {
 		return miMascotaDAO.actualizarMascota(mascotaNueva, nombreoriginal);
@@ -76,6 +84,14 @@ public class Coordinador {
 	public ArrayList<MascotaDTO> consultarMascotas(String idDueno) throws SQLException {
 	    return miMascotaDAO.consultarMascotas(idDueno);
 	}
+	public PersonaDTO consultarPersona(String text) throws SQLException {
+		return miPersonaDAO.consultarPersona(text);
+	}
+	public ArrayList<PersonaDTO> consultarListaPersonas() {
+		return miPersonaDAO.consultarListaPersonas();
+	}
+
+
 
 
 
@@ -96,6 +112,11 @@ public class Coordinador {
 		this.miConexionBD = miConexionBD;
 	}
 
+	
+	
+	
+
+	
 	
 
 	

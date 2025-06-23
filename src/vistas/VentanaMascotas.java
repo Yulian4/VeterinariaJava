@@ -21,13 +21,14 @@ public class VentanaMascotas extends JFrame implements ActionListener {
 	private JScrollPane scrollTabla;
 	private Coordinador miCoordinador;
 	private ArrayList<MascotaDTO> mascotasDelDueno;
+	private JComboBox<String> comboSexo;
 	private String nombreOriginal;
 	private int indiceActual = 0;
 
 	public VentanaMascotas() {
 		setTitle("Gestionar Personas");
 		setSize(400, 400);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setLayout(null);
 
@@ -63,10 +64,11 @@ public class VentanaMascotas extends JFrame implements ActionListener {
 		JLabel lblSexo = new JLabel("Sexo:");
 		lblSexo.setBounds(210, 85, 80, 25);
 		add(lblSexo);
+		
+		comboSexo = new JComboBox<>(new String[] { "Macho", "Hembra" });
+		comboSexo.setBounds(270, 85, 100, 25);
+		add(comboSexo);
 
-		txtSexo = new JTextField();
-		txtSexo.setBounds(270, 85, 100, 25);
-		add(txtSexo);
 
 		btnRegistrar = new JButton("Registrar");
 		btnRegistrar.setBounds(40, 120, 120, 30);
@@ -163,21 +165,20 @@ public class VentanaMascotas extends JFrame implements ActionListener {
 	}
 
 	private boolean registrarMascotas() throws SQLException {
+		if (!validarCampos()) {
+			return false;
+		}
 		MascotaDTO mascota = new MascotaDTO();
 
 		mascota.setIdDueno(txtDocumento.getText());
 		mascota.setNombre(txtNombre.getText());
-		System.out.println("Texto del campo txtRaza: " + txtRaza.getText());
-
 		mascota.setRaza(txtRaza.getText());
-		System.out.println("RAZA = " + txtRaza.getText());
-		mascota.setSexo(txtSexo.getText());
+	
+		mascota.setSexo(comboSexo.getSelectedItem().toString());
 		boolean res = miCoordinador.registrarMascota(mascota);
 		if (res) {
 			JOptionPane.showMessageDialog(this, "mascota registrada con éxito.");
-		} else {
-			JOptionPane.showMessageDialog(this, "No se pudo registrar la masccota.");
-		}
+		} 
 
 		return res;
 
@@ -274,11 +275,49 @@ public class VentanaMascotas extends JFrame implements ActionListener {
 			tablaNombres.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
 		}
 	}
+	
+	private boolean validarCampos() {
+		boolean camposValidos = true;
+
+		String documento = txtDocumento.getText().trim();
+		if (documento.isEmpty()) {
+			txtDocumento.setBorder(BorderFactory.createLineBorder(Color.RED));
+			camposValidos = false;
+		} else if (!documento.matches("\\d+")) {
+			txtDocumento.setBorder(BorderFactory.createLineBorder(Color.RED));
+			camposValidos = false;
+			JOptionPane.showMessageDialog(this, "El ID del dueño debe contener solo números.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
+		} else {
+			txtDocumento.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
+		}
+
+		if (txtNombre.getText().trim().isEmpty()) {
+			txtNombre.setBorder(BorderFactory.createLineBorder(Color.RED));
+			camposValidos = false;
+		} else {
+			txtNombre.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
+		}
+
+
+		if (txtRaza.getText().trim().isEmpty()) {
+			txtRaza.setBorder(BorderFactory.createLineBorder(Color.RED));
+			camposValidos = false;
+		} else {
+			txtRaza.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
+		}
+
+		if (!camposValidos) {
+			JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos correctamente.", "Campos inválidos", JOptionPane.WARNING_MESSAGE);
+		}
+
+		return camposValidos;
+	}
+
 
 	private void mostrarMascota(MascotaDTO mascota) {
 		txtNombre.setText(mascota.getNombre());
 		txtRaza.setText(mascota.getRaza());
-		txtSexo.setText(mascota.getSexo());
+		comboSexo.setSelectedItem(mascota.getSexo());
 		nombreOriginal = mascota.getNombre();
 	}
 
